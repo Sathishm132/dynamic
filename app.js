@@ -17,6 +17,8 @@ app.set('views', 'views');
 
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
+const cart = require('./models/cart');
+const cartitem = require('./models/cartitem');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -39,9 +41,13 @@ app.use(shopRoutes);
 app.use(errorController.get404);
  prduct.belongsTo(user,{constrains:true,onDelete:'CASCADE'})
  user.hasMany(prduct)
+ user.hasOne(cart)
+ cart.belongsTo(user)
+ cart.belongsToMany(prduct,{through:cartitem})
+ prduct.belongsToMany(cart,{through:cartitem})
 
 
-sequelize.sync().then((result)=>{
+sequelize.sync({force:true}).then((result)=>{
    return user.findAll({
     where: {
       id: 1
@@ -52,6 +58,10 @@ sequelize.sync().then((result)=>{
         return user.create({name:"sathish",email:"satash@g.com"})
     }
     return user
-})
+}).then((user)=>{
+    user.createCart()
+}
+    
+)
 
 app.listen(3000);

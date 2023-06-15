@@ -13,12 +13,16 @@ exports.postAddProduct = (req, res, next) => {
   const imageUrl = req.body.imageUrl;
   const price = req.body.price;
   const description = req.body.description;
-  Product.create({
+  const userId=req.user.id
+  console.log(req.user)
+  req.user.createProduct({
     title:title,
     price:price,
     descrption:description,
-    imaageUrl:imageUrl
-  }).then(()=>{
+    imaageUrl:imageUrl,
+    
+  })
+  .then(()=>{
     return res.redirect('/');
 
   }).catch(err=>console.log(err))
@@ -57,6 +61,7 @@ exports.postEditProduct = (req, res, next) => {
   const updatedPrice = req.body.price;
   const updatedImageUrl = req.body.imageUrl;
   const updatedDesc = req.body.description;
+  
 
   Product.update({ title:updatedTitle,
     price:updatedPrice,
